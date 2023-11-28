@@ -11,21 +11,15 @@ name: build
 
 on:
   push:
-    branches:
-    - '**'
-    tags-ignore:
-    - '**'
-    # ignore github repo settings and all readme adoc changes
+    branches: ['main']
     paths-ignore:
-    - '.github/*.yml'
     - '**/*.adoc'
     - '**/*.md'
-    
-  # once every week sunday 03:22
-  schedule:
-    - cron: '22 03 * * 0'
   pull_request:
-  workflow_dispatch:
+    branches: ['main']
+    paths-ignore:
+    - '**/*.adoc'
+    - '**/*.md'
 
 env:
   IMAGE-PATH: ${{ github.repository }}
@@ -44,20 +38,17 @@ jobs:
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
-      # https://github.com/docker/setup-buildx-action
 
     - name: Set up Docker Buildx
       id: buildx
       uses: docker/setup-buildx-action@v2
 
     - name: Docker meta
-      id: my_meta # you'll use this in the next step
+      id: my_meta
       uses: docker/metadata-action@v4
       with:
-        # list of Docker images to use as base name for tags
         images: |
           ${{ env.IMAGE-REGISTRY }}/${{ env.IMAGE-PATH }}
-          # Docker tags based on the following events/attributes
         tags: |
           type=schedule
           type=ref,event=branch
