@@ -22,10 +22,10 @@ on:
     - '**/*.md'
     
   # once every week sunday 03:22
-  schedule:   
+  schedule:
     - cron: '22 03 * * 0'
   pull_request:
-  workflow_dispatch:    
+  workflow_dispatch:
 
 env:
   IMAGE-PATH: ${{ github.repository }}
@@ -52,7 +52,7 @@ jobs:
 
     - name: Docker meta
       id: my_meta # you'll use this in the next step
-      uses: docker/metadata-action@v4            
+      uses: docker/metadata-action@v4
       with:
         # list of Docker images to use as base name for tags
         images: |
@@ -66,22 +66,17 @@ jobs:
           type=semver,pattern={{major}}.{{minor}}
           type=semver,pattern={{major}}
           type=sha
-    - name: Login to docker repo      
+    - name: Login to docker repo
       uses: docker/login-action@v2
       with:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
-        registry: ${{ env.IMAGE-REGISTRY}}    
+        registry: ${{ env.IMAGE-REGISTRY}}
     - name: Build and push
       uses: docker/build-push-action@v2
       with:
         context: .
-        platforms: linux/amd64
+        platforms: linux/amd64,linux/arm64
         push: ${{ github.event_name != 'pull_request' }}
         tags: ${{ steps.my_meta.outputs.tags }}
         labels: ${{ steps.my_meta.outputs.labels }}
-        
-        
-        
-
-  
